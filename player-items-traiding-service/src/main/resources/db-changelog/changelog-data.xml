@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="initial-postgres-data-1.0" author="dzmitry.kapachou">
+        <sql>
+            insert into player(id, username, password)
+            values (11100011, 'username-1', '$2a$08$VAQnJFcbHvXrc1qlP8U2M.LVKatEp0Z67WPsc.yCSx2cDnDR4yeym');
+
+            insert into player(id, username, password)
+            values (11200031, 'username-2', '$2a$08$VAQnJFcbHvXrc1qlP8U2M.LVKatEp0Z67WPsc.yCSx2cDnDR4yeym');
+
+            insert into player(id, username, password)
+            values (11331003, 'username-3', '$2a$08$VAQnJFcbHvXrc1qlP8U2M.LVKatEp0Z67WPsc.yCSx2cDnDR4yeym');
+
+            insert into player(id, username, password)
+            values (19190004, 'username-4', '$2a$08$VAQnJFcbHvXrc1qlP8U2M.LVKatEp0Z67WPsc.yCSx2cDnDR4yeym');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

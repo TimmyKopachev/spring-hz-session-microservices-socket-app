@@ -1,0 +1,26 @@
+server:
+  port: 9091
+
+
+spring:
+  application:
+    name: player-items-trading
+#
+#  #JPA
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/trading-postgres-db
+#    username: postgres
+#    password: postgres
+#    driver-class-name: org.postgresql.Driver
+#
+#  #Liquibase
+#  liquibase:
+#    change-log: ${LIQUIBASE_CHANGE_LOG:classpath:db-changelog/changelog-dev.xml}
+#
+#trading:
+#  init:
+#    topics: socket-trading-event-notification-topic
+#
+#kafka:
+#  bootstrap:
+#    server: localhost:9092
