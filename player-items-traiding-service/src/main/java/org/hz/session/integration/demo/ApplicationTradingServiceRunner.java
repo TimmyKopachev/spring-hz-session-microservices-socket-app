@@ -7,7 +7,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @SpringBootApplication
 public class ApplicationTradingServiceRunner {
 
-
     public static void main(String[] args) {
         new SpringApplicationBuilder()
                 .sources(ApplicationTradingServiceRunner.class)

@@ -5,11 +5,11 @@ spring:
   application:
     name: socket-trading-event-pusher
 
-#
-#kafka:
-#  bootstrap:
-#    server: localhost:9092
-#
-#trading:
-#  init:
-#    topics: socket-trading-event-notification-topic
+
+kafka:
+  bootstrap:
+    server: localhost:9092
+
+trading:
+  init:
+    topics: socket-trading-event-notification-topic

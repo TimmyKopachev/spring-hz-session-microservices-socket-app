@@ -1,12 +1,8 @@
 package org.hz.session.integration.demo.config;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import kafka.tools.ConsoleConsumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.hz.session.integration.demo.serialization.JacksonDeserializer;
-import org.hz.session.integration.demo.serialization.JacksonSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +14,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 import java.util.Map;
 
-//@Configuration
+@Configuration
 public class KafkaConfiguration {
 
     @Value("${kafka.bootstrap.server:localhost:9092}")

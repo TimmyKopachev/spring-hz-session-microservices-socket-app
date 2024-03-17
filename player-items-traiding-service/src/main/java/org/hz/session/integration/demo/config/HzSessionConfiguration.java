@@ -9,15 +9,19 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+import org.springframework.session.FlushMode;
 import org.springframework.session.MapSession;
+import org.springframework.session.SaveMode;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastSessionSerializer;
 import org.springframework.session.hazelcast.PrincipalNameExtractor;
+import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 
 @Configuration(proxyBeanMethods = false)
 @EnableCaching
-//@EnableHazelcastHttpSession
+@EnableHazelcastHttpSession
 public class HzSessionConfiguration extends CachingConfigurerSupport {
 
     @Bean
@@ -42,6 +46,7 @@ public class HzSessionConfiguration extends CachingConfigurerSupport {
                 .addAttributeConfig(attributeConfig)
                 .addIndexConfig(
                         new IndexConfig(IndexType.HASH, HazelcastIndexedSessionRepository.PRINCIPAL_NAME_ATTRIBUTE));
+
         SerializerConfig serializerConfig = new SerializerConfig();
         serializerConfig.setImplementation(new HazelcastSessionSerializer()).setTypeClass(MapSession.class);
         config.getSerializationConfig().addSerializerConfig(serializerConfig);
@@ -49,15 +54,24 @@ public class HzSessionConfiguration extends CachingConfigurerSupport {
         return Hazelcast.newHazelcastInstance(config);
     }
 
+    @Bean
+    public SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> customize() {
+        return (sessionRepository) -> {
+            sessionRepository.setFlushMode(FlushMode.IMMEDIATE);
+            sessionRepository.setSaveMode(SaveMode.ALWAYS);
+            sessionRepository.setSessionMapName(HazelcastIndexedSessionRepository.DEFAULT_SESSION_MAP_NAME);
+        };
+    }
 
-//    public class SecurityInitializer extends AbstractSecurityWebApplicationInitializer {
-//        public SecurityInitializer() {
-//            super(SecurityConfig.class, SessionConfig.class);
-//        }
-//    }
-//
-//    public class Initializer extends AbstractHttpSessionApplicationInitializer {
-//
-//    }
+
+    public class SecurityInitializer extends AbstractSecurityWebApplicationInitializer {
+        public SecurityInitializer() {
+            super(SecurityConfig.class, SessionConfig.class);
+        }
+    }
+
+    public class Initializer extends AbstractHttpSessionApplicationInitializer {
+
+    }
 
 }
