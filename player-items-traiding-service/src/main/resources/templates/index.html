@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Otus Social Network</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" th:src="@{/js/sockjs-0.3.4.js}"></script>
+    <script type="text/javascript" th:src="@{/js/stomp.js}"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+
+        function connect() {
+            let socket = 'ws://localhost:9087/ws-trading';
+            stompClient = Stomp.client(socket);
+            stompClient.connect({}, function(frame) {
+                stompClient.subscribe('/user/queue/requests', function(msg) {
+
+                    const area = document.getElementById('products');
+                    var innerProduct = document.createElement('div');
+                    innerProduct.innerHTML = msg.body;
+                    area.appendChild(innerProduct);
+
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="header">
+        <h3>WebSocket | Validation UI workflow:</h3>
+    </div>
+    <div id="body">
+        <div>
+            <button id="connect" onclick="connect();">Connect</button>
+        </div>
+        <h4>Products:</h4>
+        <div id="products" th:each="product: ${products}">
+            <p th:text="${product}" />
+        </div>
+    </div>
+    <div id="footer">
+    </div>
+</body>
+</html>

@@ -18,9 +18,6 @@ public class JacksonDeserializer<T> implements Deserializer<T> {
         this.clazz = clazz;
     }
 
-    public void init() {
-
-    }
 
     @Override
     public T deserialize(String topic, byte[] data) {

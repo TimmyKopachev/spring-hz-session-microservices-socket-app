@@ -11,14 +11,18 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration extends AbstractSessionWebSocketMessageBrokerConfigurer<Session> {
 
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/queue/", "/topic/", "/channel");
+        registry.enableSimpleBroker("/queue/", "/topic/");
         registry.setApplicationDestinationPrefixes("/app");
+        registry.setPreservePublishOrder(true);
     }
 
     @Override
     protected void configureStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws-trading")
+                .setAllowedOriginPatterns("*");
         registry.addEndpoint("/ws-trading")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();

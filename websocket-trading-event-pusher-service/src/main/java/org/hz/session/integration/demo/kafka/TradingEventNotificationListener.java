@@ -1,38 +1,31 @@
 package org.hz.session.integration.demo.kafka;
 
 import lombok.AllArgsConstructor;
+import org.hz.session.integration.demo.model.channel.TradeRequest;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.session.SessionRepository;
-import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.session.FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 
 @Component
 @AllArgsConstructor
 public class TradingEventNotificationListener {
 
-    final SimpMessagingTemplate messageSocketTemplate;
-    final SessionRepository sessionRepository;
-    final HazelcastIndexedSessionRepository hazelcastSessionRepository;
+    final SimpMessageSendingOperations messagingTemplate;
 
     @KafkaListener(id = "socket-event-notification-handler", topics = "socket-trading-event-notification-topic")
-    @SendTo("/channel/requests")
-    public void eventHandler(String product) {
-        var sessions = hazelcastSessionRepository.findByIndexNameAndIndexValue(PRINCIPAL_NAME_INDEX_NAME, "username-3");
-//        if (!sessions.entrySet().isEmpty()) {
-//            sessions.keySet()
-//                    .forEach(sessionId ->
-//                            messageSocketTemplate.convertAndSendToUser(sessionId, "/channel/requests", product));
-//        }
-        if (!sessions.entrySet().isEmpty()) {
-            sessions.keySet()
-                    .forEach(sessionId ->
-                            messageSocketTemplate.convertAndSend(
-                                    String.format("/user/%s/channel/requests", sessionId), product));
-        }
+    public void eventHandler(TradeRequest request) {
+        messagingTemplate.convertAndSendToUser(request.getUsernameTo(), "/queue/requests", request.getProduct());
+    }
+
+    private MessageHeaders createHeaders(String sessionId) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor
+                .create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId(sessionId);
+        headerAccessor.setLeaveMutable(true);
+        return headerAccessor.getMessageHeaders();
     }
 
 }
