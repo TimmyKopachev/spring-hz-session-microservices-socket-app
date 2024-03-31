@@ -32,6 +32,7 @@ public class KafkaConfiguration {
         return factory;
     }
 
+
     @Bean
     public ConsumerFactory<String, TradeRequest> consumerFactory() {
         JsonDeserializer<TradeRequest> payloadDeserializer = new JsonDeserializer<>();

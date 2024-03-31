@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: socket-trading-event-pusher
+  main:
+    allow-bean-definition-overriding: true
 
 kafka:
   bootstrap:
@@ -12,6 +14,8 @@ kafka:
 trading:
   init:
     topics: socket-trading-event-notification-topic
+
+
 
 
 

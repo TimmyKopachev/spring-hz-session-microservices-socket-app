@@ -1,51 +1,72 @@
 package org.hz.session.integration.demo.config;
 
-import com.hazelcast.config.SecurityConfig;
-import org.apache.catalina.util.SessionConfig;
+import org.hz.session.integration.demo.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
-import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
-import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.COOKIES;
 
-@Configuration
 @EnableWebSecurity
+@Configuration
 @EnableMethodSecurity
-public class WebSecurityConfiguration {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private AuthenticationProvider authenticationProvider;
+    private PlayerService personService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(registry -> {
-                    registry.anyRequest().authenticated();
-                })
-                .logout((logout) -> logout
-                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(COOKIES))))
-                .cors(AbstractHttpConfigurer::disable)
-                .authenticationProvider(authenticationProvider)
-                .httpBasic(withDefaults())
-                .formLogin(withDefaults());
-
-        return http.build();
+    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(authenticationProvider())
+                .authenticationEventPublisher(authenticationEventPublisher())
+                .build();
     }
 
+    DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Override
+    protected UserDetailsService userDetailsService() {
+        return this.personService;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    AuthenticationEventPublisher authenticationEventPublisher() {
+        return new DefaultAuthenticationEventPublisher();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic()
+                .and().formLogin()
+                .and()
+                .cors().disable();
+    }
 
 
 }

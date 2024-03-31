@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 
 import java.util.Objects;
 
@@ -19,7 +18,7 @@ public class LocalEmbeddedKafkaConfiguration {
     @ConditionalOnMissingBean
     EmbeddedKafkaBroker embeddedKafkaBroker() {
         Objects.requireNonNull(tradingTopic);
-        var embeddedKafkaBroker = new EmbeddedKafkaZKBroker(1,
+        var embeddedKafkaBroker = new EmbeddedKafkaBroker(1,
                 true,
                 2,
                 tradingTopic)
@@ -34,4 +33,5 @@ public class LocalEmbeddedKafkaConfiguration {
 
         return embeddedKafkaBroker;
     }
+
 }
